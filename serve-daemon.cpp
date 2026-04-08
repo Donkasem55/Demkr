@@ -22,10 +22,19 @@ std::vector<std::string> read(char* serverid, char* msgid) {
     
     std::string loc = pad(serverid, msgid);
     std::ifstream fis;
+    std::vector<std::string> out = {};
+
     fis.open(loc);
     if (!fis.is_open()) {
         std::cerr << "404 not found";
+    } else {
+        std::string line;
+        while (std::getline(fis, line)) {
+            std::cout << line << "\n";
+        }
     }
+    
+    return out;
 
 }
 

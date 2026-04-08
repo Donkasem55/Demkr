@@ -1,8 +1,7 @@
 from wsgiref.simple_server import make_server
 import subprocess
 
-def daemon(serverid, msgid):
-
+def serve_daemon(serverid, msgid):
     p = subprocess.Popen(
         ["serve-daemon.exe", serverid, msgid],
         stdin=subprocess.PIPE,
