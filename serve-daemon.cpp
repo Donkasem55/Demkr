@@ -10,7 +10,7 @@
 std::string pad(char* serverid, char* msgid) {
 
     std::stringstream ss;
-    ss << "db/" << "server/" << std::setfill('0') << std::setw(16) << std::string(serverid) << "/";
+    ss << "db/" << "server/" << std::string(serverid) << "/";
     ss << std::setfill('0') << std::setw(16) << std::string(msgid);
     std::string loc = ss.str();
 
@@ -18,7 +18,7 @@ std::string pad(char* serverid, char* msgid) {
 
 }
 
-std::vector<std::string> read(char* serverid, char* msgid) {
+void read(char* serverid, char* msgid) {
     
     std::string loc = pad(serverid, msgid);
     std::ifstream fis;
@@ -33,9 +33,6 @@ std::vector<std::string> read(char* serverid, char* msgid) {
             std::cout << line << "\n";
         }
     }
-    
-    return out;
-
 }
 
 int main(int argc, char* argv[]) {
@@ -44,9 +41,7 @@ int main(int argc, char* argv[]) {
 
         char* serverid = argv[2];
         char* msgid = argv[3];
-        std::string path = pad(serverid, msgid);
-
-        std::cout << path << std::endl;
+        read(serverid, msgid);
         
     } else if (strcmp(argv[1], "write") == 0) {
 
