@@ -1,16 +1,20 @@
 from wsgiref.simple_server import make_server
 import subprocess
 
-def serve_daemon_read(serverid, msgid):
+def start_read_daemon(serverid, msgid):
     p = subprocess.run(
         ["serve-daemon.exe", "read", serverid, msgid],
+        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True
+        text=True,
+        bufsize=1
     )  
+    return p.stdout, p.stderr
 
-    data = p.stdout.split("\n")
-    err = p.stderr
+def daemon_read(serverid, msgid):
+    data, err = start_read_daemon(serverid, msgid)
+
     if "404 not found" in err:
         return {"code":"404 Not Found"}
     else:
@@ -21,6 +25,7 @@ def serve_daemon_read(serverid, msgid):
         return {"user":user, "title":title, "text":text, "date":date, "code":"200 OK"}
 
 def application(environ, start_response):
+    global p
     path_info = environ['PATH_INFO']
     path = path_info.split("/")
     if path[0] == "":
@@ -33,7 +38,7 @@ def application(environ, start_response):
     elif request_method == 'GET':
         if path[0] == "s":
             print(path)
-            dat = serve_daemon_read(path[1], path[2])
+            dat = daemon_read(path[1], path[2])
             print(dat)
             print(dat["user"], "said: ", dat["title"])
             status = dat["code"]

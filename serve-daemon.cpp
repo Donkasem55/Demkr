@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <cstring>
 
-std::string pad(char* serverid, char* msgid) {
+std::string pad(const char* serverid, const char* msgid) {
 
     std::stringstream ss;
     ss << "db/" << "server/" << std::string(serverid) << "/";
@@ -18,7 +18,7 @@ std::string pad(char* serverid, char* msgid) {
 
 }
 
-void read(char* serverid, char* msgid) {
+void read(const char* serverid, const char* msgid) {
     
     std::string loc = pad(serverid, msgid);
     std::ifstream fis;
@@ -35,12 +35,39 @@ void read(char* serverid, char* msgid) {
     }
 }
 
+/* unused
+
+std::vector<std::string> split(std::string inp, char del) {
+
+    std::vector<std::string> out;
+    std::string emptystr = "";
+    out.push_back(emptystr);
+    unsigned i = 0;
+    
+    for (int j=0; j<inp.length(); j++) {
+        if (inp[j] == del) {
+            out.push_back(emptystr);
+            i++;
+        } else {
+            out[i] = out[i] + inp[j];
+        }
+    }
+
+    return out;
+
+}
+
+*/
+
 int main(int argc, char* argv[]) {
+
+    std::string cmd;
+    std::getline(std::cin, cmd);
 
     if (strcmp(argv[1], "read") == 0) {
 
-        char* serverid = argv[2];
-        char* msgid = argv[3];
+        const char* serverid = argv[2];
+        const char* msgid = argv[3];
         read(serverid, msgid);
         
     } else if (strcmp(argv[1], "write") == 0) {
