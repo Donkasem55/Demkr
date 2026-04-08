@@ -1,6 +1,19 @@
 from wsgiref.simple_server import make_server
 import subprocess
 
+def daemon(serverid, msgid):
+
+    p = subprocess.Popen(
+        ["serve-daemon.exe", serverid, msgid],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    data = p.stdout.readline()
+    meta = p.stderr.readline()
+
 def application(environ, start_response):
     path_info = environ['PATH_INFO']
     request_method = environ['REQUEST_METHOD']

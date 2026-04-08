@@ -20,8 +20,12 @@ std::string pad(char* serverid, char* msgid) {
 
 std::vector<std::string> read(char* serverid, char* msgid) {
     
+    std::string loc = pad(serverid, msgid);
     std::ifstream fis;
-    // fis.open(loc);
+    fis.open(loc);
+    if (!fis.is_open()) {
+        std::cerr << "404 not found";
+    }
 
 }
 
@@ -36,7 +40,7 @@ int main(int argc, char* argv[]) {
         std::cout << path << std::endl;
         
     } else if (strcmp(argv[1], "write") == 0) {
-        
+
     }
 
     return 0;
