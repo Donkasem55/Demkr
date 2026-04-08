@@ -1,9 +1,32 @@
 from wsgiref.simple_server import make_server
-import subprocess
+import subprocess, os
 
 def start_read_daemon(serverid, msgid):
     p = subprocess.run(
         ["serve-daemon.exe", "read", serverid, msgid],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1
+    )  
+    return p.stdout, p.stderr
+
+def daemon_write(serverid, user, date, title, body):
+    try:
+        x = sorted(os.listdir(f"db/server/{serverid}"))
+    except:
+        os.mkdir(f"db/server/{serverid}")
+        with open(f"db/server/{serverid}/0000000000000000") as f:
+            d = """TheLuckyCuber999
+08/04/2026
+New Community
+Hello, welcome to your new community!"""
+            f.write(d)
+        x = ["0000000000000000"]
+    msgid = "".join(hex(int(x[-1], 16) + 1)[2:])
+    p = subprocess.run(
+        ["serve-daemon.exe", "write", serverid, msgid, user, date, title, body],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -48,6 +71,8 @@ def application(environ, start_response):
         else:
             status = '404 Not Found'
             response_body = b"404 Not Found"
+    elif request_method == 'POST':
+        pass
 
     else:
         status = '404 Not Found'

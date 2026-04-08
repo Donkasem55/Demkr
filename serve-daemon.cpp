@@ -35,6 +35,14 @@ void read(const char* serverid, const char* msgid) {
     }
 }
 
+void write(const char* serverid, const char* msgid, std::string user, std::string date, std::string title, std::string body) {
+    
+    std::string loc = pad(serverid, msgid);
+    std::ofstream fis(loc);
+    fis << user << "" << date << "" << title << "" << body << "";
+
+}
+
 /* unused
 
 std::vector<std::string> split(std::string inp, char del) {
@@ -71,6 +79,14 @@ int main(int argc, char* argv[]) {
         read(serverid, msgid);
         
     } else if (strcmp(argv[1], "write") == 0) {
+
+        const char* serverid = argv[2];
+        const char* msgid = argv[3];
+        const char* user = argv[4];
+        const char* date = argv[5];
+        const char* title = argv[6];
+        const char* body = argv[7];
+        write(serverid, msgid, user, date, title, body);
 
     }
 
