@@ -68,10 +68,7 @@ std::vector<std::string> split(std::string inp, char del) {
 */
 
 int main(int argc, char* argv[]) {
-
-    std::string cmd;
-    std::getline(std::cin, cmd);
-
+    
     if (strcmp(argv[1], "read") == 0) {
 
         const char* serverid = argv[2];

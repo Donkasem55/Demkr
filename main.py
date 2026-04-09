@@ -37,6 +37,7 @@ Hello, welcome to your new community!"""
 
 def daemon_read(serverid, msgid):
     data, err = start_read_daemon(serverid, msgid)
+    data = data.split("\n")
 
     if "404 not found" in err:
         return {"code":"404 Not Found"}
@@ -65,8 +66,11 @@ def application(environ, start_response):
             print(dat)
             print(dat["user"], "said: ", dat["title"])
             status = dat["code"]
+            with open("global.html") as f:
+                x = f.read()
             with open("post.html") as f:
                 t = f.read()
+                t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"{dat["title"]} | Demkr, the Democratic Central")
             response_body = f"{t.replace("{BODYTEXT}", dat["text"]).replace("{TITLE}", dat["title"]).replace("{DATE}", dat["date"]).replace("{USER}", dat["user"])}".encode("utf-8")
         else:
             status = '404 Not Found'
