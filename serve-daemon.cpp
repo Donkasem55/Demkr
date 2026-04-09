@@ -39,7 +39,7 @@ void write(const char* serverid, const char* msgid, std::string user, std::strin
     
     std::string loc = pad(serverid, msgid);
     std::ofstream fis(loc);
-    fis << user << "" << date << "" << title << "" << body << "";
+    fis << user << "\n" << date << "\n" << title << "\n" << body << "\n";
 
 }
 
@@ -68,7 +68,7 @@ std::vector<std::string> split(std::string inp, char del) {
 */
 
 int main(int argc, char* argv[]) {
-    
+
     if (strcmp(argv[1], "read") == 0) {
 
         const char* serverid = argv[2];
