@@ -1,6 +1,12 @@
 from wsgiref.simple_server import make_server
-import subprocess, os, sys, json, time
+import subprocess, os, sys, json, random
 from datetime import datetime
+
+args = sys.argv[1:]
+if args == []:
+    port = 8000
+else:
+    port = args[0]
 
 def start_read_daemon(serverid, msgid):
     p = subprocess.run(
@@ -53,14 +59,18 @@ def application(environ, start_response):
     global p
     path_info = environ['PATH_INFO']
     path = path_info.split("/")
+    request_method = environ['REQUEST_METHOD']
     if path[0] == "":
         path.pop(0)
-    request_method = environ['REQUEST_METHOD']
+    if path == [] or path == [""]:
+        with open("index.html") as f:
+            response_body = f.read().encode("utf-8")
+            headers = [('Content-type', 'text/html')]
+            status = '200 OK'
+            start_response(status, headers)
+            return [response_body]
     
-    if path_info == '/':
-        status = '200 OK'
-        response_body = b"Hello, World!"
-    elif request_method == 'GET':
+    if request_method == 'GET':
         if path[0] == "s":
             if path[-1] == "":
                 path.pop()
@@ -80,7 +90,9 @@ def application(environ, start_response):
                     with open("post.html") as f:
                         t = f.read()
                         t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"{dat["title"]} | Demkr, the Democratic Central")
-                    response_body = f"<a target=\"_top\" href=\"{path[2]}\">{t.replace("{BODYTEXT}", dat["text"]).replace("{TITLE}", dat["title"]).replace("{DATE}", dat["date"]).replace("{USER}", dat["user"])}</a>".encode("utf-8")
+                        t = t.replace("{TOPIC}", path[1])
+                    response_body = f"{t.replace("{BODYTEXT}", dat["text"]).replace("{TITLE}", dat["title"]).replace("{DATE}", dat["date"]).replace("{USER}", dat["user"]).replace("{path[2]}", f"{path[2]}")}".encode("utf-8")
+            
             except IndexError:
                 with open("global.html") as f:
                     x = f.read()
@@ -88,7 +100,7 @@ def application(environ, start_response):
                     t = x.replace("{PAGEBODY}", f.read())
                 with open("topicheader.html") as f:
                     t = t.replace("{TOPICHEADER}", f.read())
-                    t = t.replace("{COMMUNITYNAME}", path[1])
+                    t = t.replace("{COMMUNITYNAME}", f"?comm={path[1]}")
                     t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{path[1]}/{a}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"150px\" src=\"{path[1]}/{a}\"></iframe></a><br>" for a in sorted(os.listdir(f"db/server/{path[1]}"), reverse=True)])).replace("{PAGETITLE}", f"s/{path[1]} | Demkr, the Democratic Central")
                 response_body = t.encode("utf-8")
                 status = '200 OK'
@@ -108,9 +120,33 @@ def application(environ, start_response):
                 t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"New Post | Demkr, the Democratic Central")
             response_body = t.encode("utf-8")
             status = '200 OK'
+            
+        elif path[0] == "home":
+            with open("global.html") as f:
+                x = f.read()
+            with open("topicpage.html") as f:
+                t = x.replace("{PAGEBODY}", f.read())
+            with open("topicheader.html") as f:
+                t = t.replace("{TOPICHEADER}", f.read())
+                t = t.replace("{COMMUNITYNAME}", "")
+            loc = {g:os.listdir(g) for g in [f"db/server/{f}" for f in os.listdir('db/server') if not os.path.isfile(os.path.join('db', 'server', f))]}
+            q = []
+            for i in loc:
+                for j in loc[i]:
+                    q.append(f"{i}/{j}")
+            x = random.sample(q, min(len(q), 25))
+            t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{i}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"150px\" src=\"{i}\"></iframe></a><br>" for i in x])).replace("db/server", "s")
+            response_body = t.replace("{PAGETITLE}", "Home | Demkr, the Democratic Central").encode("utf-8")
+            status = '200 OK'
 
         elif path[0] == "post.js":
             with open("post.js") as f:
+                x = f.read()
+            response_body = x.encode("utf-8")
+            status = '200 OK'
+
+        elif path[0] == "tohome.js":
+            with open("tohome.js") as f:
                 x = f.read()
             response_body = x.encode("utf-8")
             status = '200 OK'
