@@ -2,6 +2,8 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
 let com = urlParams.get('comm');
+console.log(com);
+document.getElementById('newpostcomm').value = com;
 if (urlParams.has("ref")) {
     window.location.assign(`/s/${com}`);
 }

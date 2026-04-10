@@ -84,8 +84,12 @@ def application(environ, start_response):
             except IndexError:
                 with open("global.html") as f:
                     x = f.read()
-                    print(path)
-                    t = x.replace("{PAGEBODY}", "".join([f"<a href=\"{path[1]}/{a}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"150px\" src=\"{path[1]}/{a}\"></iframe></a><br>" for a in sorted(os.listdir(f"db/server/{path[1]}"), reverse=True)])).replace("{PAGETITLE}", f"s/{path[1]} | Demkr, the Democratic Central")
+                with open("topicpage.html") as f:
+                    t = x.replace("{PAGEBODY}", f.read())
+                with open("topicheader.html") as f:
+                    t = t.replace("{TOPICHEADER}", f.read())
+                    t = t.replace("{COMMUNITYNAME}", path[1])
+                    t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{path[1]}/{a}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"150px\" src=\"{path[1]}/{a}\"></iframe></a><br>" for a in sorted(os.listdir(f"db/server/{path[1]}"), reverse=True)])).replace("{PAGETITLE}", f"s/{path[1]} | Demkr, the Democratic Central")
                 response_body = t.encode("utf-8")
                 status = '200 OK'
             except FileNotFoundError:
