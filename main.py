@@ -70,6 +70,13 @@ def application(environ, start_response):
             start_response(status, headers)
             return [response_body]
     
+    w = os.listdir("db/server")
+    sidebar = "".join(f"<a href=\"/s/{i}\" class=\"sidebarlnk\">s/{i}</a>" for i in w[:min(25, len(w))])
+    topbar = "Demkr: The Democratic Central of the Internet" # temporary (meaning forever)
+
+    def read_global(f, left="") -> str:
+        return f.read().replace("{TOPBAR}", topbar).replace("{SIDEBAR}", sidebar).replace("{MARGIN-LEFT}", left)
+    
     if request_method == 'GET':
         if path[0] == "s":
             if path[-1] == "":
@@ -79,14 +86,14 @@ def application(environ, start_response):
                 status = dat["code"]
                 if status == "404 Not Found":
                     with open("global.html") as f:
-                        x = f.read()
+                        x = read_global(f)
                     with open("404.html") as f:
                         t = f.read()
                         t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"Page Not Found | Demkr, the Democratic Central")
                     response_body = t.encode("utf-8")
                 else:
                     with open("global.html") as f:
-                        x = f.read()
+                        x = read_global(f)
                     with open("post.html") as f:
                         t = f.read()
                         t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"{dat["title"]} | Demkr, the Democratic Central")
@@ -95,7 +102,7 @@ def application(environ, start_response):
             
             except IndexError:
                 with open("global.html") as f:
-                    x = f.read()
+                    x = read_global(f)
                 with open("topicpage.html") as f:
                     t = x.replace("{PAGEBODY}", f.read())
                 with open("topicheader.html") as f:
@@ -106,7 +113,7 @@ def application(environ, start_response):
                 status = '200 OK'
             except FileNotFoundError:
                 with open("global.html") as f:
-                    x = f.read()
+                    x = read_global(f)
                 with open("404.html") as f:
                     t = f.read()
                     t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"Page Not Found | Demkr, the Democratic Central")
@@ -114,7 +121,7 @@ def application(environ, start_response):
                 
         elif path[0] == "post":
             with open("global.html") as f:
-                x = f.read()
+                x = read_global(f)
             with open("newpost.html") as f:
                 t = f.read()
                 t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"New Post | Demkr, the Democratic Central")
@@ -123,7 +130,7 @@ def application(environ, start_response):
             
         elif path[0] == "home":
             with open("global.html") as f:
-                x = f.read()
+                x = read_global(f)
             with open("topicpage.html") as f:
                 t = x.replace("{PAGEBODY}", f.read())
             with open("topicheader.html") as f:
@@ -145,6 +152,12 @@ def application(environ, start_response):
             response_body = x.encode("utf-8")
             status = '200 OK'
 
+        elif path[0] == "postiframetest.js":
+            with open("postiframetest.js") as f:
+                x = f.read()
+            response_body = x.encode("utf-8")
+            status = '200 OK'
+
         elif path[0] == "tohome.js":
             with open("tohome.js") as f:
                 x = f.read()
@@ -154,7 +167,7 @@ def application(environ, start_response):
         else:
             status = '404 Not Found'
             with open("global.html") as f:
-                x = f.read()
+                x = read_global(f)
             with open("404.html") as f:
                 t = f.read()
                 t = x.replace("{PAGEBODY}", t).replace("{PAGETITLE}", f"Page Not Found | Demkr, the Democratic Central")

@@ -1,2 +1,4 @@
-serve-daemon.exe
-db/server/*
+*.exe
+"serve-daemon.exe"
+db/
+postiframetest.js

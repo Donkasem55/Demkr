@@ -4,6 +4,9 @@
         <title>{PAGETITLE}</title>
     </head>
     <body>
-        {PAGEBODY}
+        <div id="topbar" style="height:25px; width:100%; position: fixed; left:0; top:0;">{TOPBAR}</div>
+        <div id="leftbar" style="height:calc(100vh-25px); width:150px; position:fixed; left:0; top:25px;">{SIDEBAR}</div>
+        <div id="restofbody" style="height:calc(100vh-25px); width:calc(100vw-150px)">{PAGEBODY}</div>
+        <script src="postiframetest.js"></script>
     </body>
 </html>
