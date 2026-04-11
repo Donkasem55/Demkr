@@ -72,10 +72,14 @@ def application(environ, start_response):
     
     w = os.listdir("db/server")
     sidebar = "".join(f"<a href=\"/s/{i}\" class=\"sidebarlnk\">s/{i}</a>" for i in w[:min(25, len(w))])
+    try:
+        rightbar = "".join(f"<a href=\"/post{"" if path[0] == "home" else f"?comm={path[1]}"}\" class=\"newpostbtn\">New Post</a>")
+    except:
+        rightbar = ""
     topbar = "Demkr: The Democratic Central of the Internet" # temporary (meaning forever)
 
     def read_global(f, left="") -> str:
-        return f.read().replace("{TOPBAR}", topbar).replace("{SIDEBAR}", sidebar).replace("{MARGIN-LEFT}", left)
+        return f.read().replace("{TOPBAR}", topbar).replace("{SIDEBAR}", sidebar).replace("{RIGHTBAR}", rightbar).replace("{MARGIN-LEFT}", left)
     
     if request_method == 'GET':
         if path[0] == "s":
@@ -104,11 +108,12 @@ def application(environ, start_response):
                 with open("global.html") as f:
                     x = read_global(f)
                 with open("topicpage.html") as f:
-                    t = x.replace("{PAGEBODY}", f.read())
+                    t = f.read()
+                    t = x.replace("{PAGEBODY}", t)
                 with open("topicheader.html") as f:
                     t = t.replace("{TOPICHEADER}", f.read())
                     t = t.replace("{COMMUNITYNAME}", f"?comm={path[1]}")
-                    t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{path[1]}/{a}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"150px\" src=\"{path[1]}/{a}\"></iframe></a><br>" for a in sorted(os.listdir(f"db/server/{path[1]}"), reverse=True)])).replace("{PAGETITLE}", f"s/{path[1]} | Demkr, the Democratic Central")
+                    t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{path[1]}/{a}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"250px\" src=\"{path[1]}/{a}\"></iframe></a><br>" for a in sorted(os.listdir(f"db/server/{path[1]}"), reverse=True)])).replace("{PAGETITLE}", f"s/{path[1]} | Demkr, the Democratic Central")
                 response_body = t.encode("utf-8")
                 status = '200 OK'
             except FileNotFoundError:
@@ -142,7 +147,7 @@ def application(environ, start_response):
                 for j in loc[i]:
                     q.append(f"{i}/{j}")
             x = random.sample(q, min(len(q), 25))
-            t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{i}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"150px\" src=\"{i}\"></iframe></a><br>" for i in x])).replace("db/server", "s")
+            t = t.replace("{TOPICINTERNAL}", "".join([f"<a href=\"{i}\"><iframe class=\"post\" title=\"\" width=\"100%\" height=\"250px\" src=\"{i}\"></iframe></a><br>" for i in x])).replace("db/server", "s")
             response_body = t.replace("{PAGETITLE}", "Home | Demkr, the Democratic Central").encode("utf-8")
             status = '200 OK'
 
